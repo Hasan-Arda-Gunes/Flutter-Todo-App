@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models import user
 from routers import user_router
+from routers import task_router
 from database import engine
 
 app = FastAPI()
@@ -26,5 +27,6 @@ app = FastAPI(title="Task Manager API")
 
 # Include API routers
 app.include_router(user_router.router, prefix="/users", tags=["Users"])
+app.include_router(task_router.router, prefix="/tasks", tags=["Tasks"])
 
 

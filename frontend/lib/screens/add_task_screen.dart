@@ -14,6 +14,7 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
+  DateTime? _selectedDate;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _priorityController = TextEditingController();
 
@@ -24,6 +25,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     super.dispose();
   }
 
+  Future<void> _pickDueDate() async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2100),
+  );
+
+  if (picked != null) {
+    setState(() {
+      _selectedDate = picked;
+    });
+  }
+}
+
+
   void _submit() {
     if (_formKey.currentState!.validate()) {
       final title = _titleController.text.trim();
@@ -33,9 +50,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       context.read<TaskBloc>().add(AddTask(
             title: title,
             priority: priority,
+            dueDate: _selectedDate,
           ));
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +100,35 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     return null;
                   },
                 ),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedDate != null
+                            ? 'Due Date: ${_selectedDate!.toLocal().toString().split(" ")[0]}'
+                            : 'No due date selected',
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now().subtract(Duration(days: 0)),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _selectedDate = picked;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submit,

@@ -15,10 +15,12 @@ class ToggleTask extends TaskEvent {
 class AddTask extends TaskEvent {
   final String title;
   final int priority;
+  final DateTime? dueDate;
 
   AddTask({
     required this.title,
     required this.priority,
+    this.dueDate,
   });
 }
 

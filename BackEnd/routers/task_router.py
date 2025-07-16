@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schemas.task_schema import TaskCreate, TaskSearch, TaskResponse
 from service.task_service import create_task_service, delete_task_service, toggle_task

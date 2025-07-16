@@ -3,7 +3,7 @@ class Task {
   final String title;
   final bool isDone;
   final int priority;
-  final String? dueDate;
+  final DateTime? dueDate;
   final String user_id;
 
   Task({
@@ -21,7 +21,7 @@ class Task {
       title: json['title'],
       isDone: json['isDone'],
       priority: json['priority'],
-      dueDate: json['due_date'],
+      dueDate: json['due_date'] != null ? DateTime.parse(json['due_date']) : null,
       user_id: json["user_id"],
     );
   }

@@ -52,7 +52,7 @@ class TaskService {
     }
   }
 
-  static Future<bool> addTask(String title, int priority) async {
+  static Future<bool> addTask(String title, int priority, DateTime? dueDate) async {
   final url = Uri.parse('$baseUrl/create');  // or whatever your endpoint is
 
   final prefs = await SharedPreferences.getInstance();
@@ -67,6 +67,7 @@ class TaskService {
     body: jsonEncode({
       'title': title,
       'priority': priority,
+      if (dueDate != null) 'due_date': dueDate.toIso8601String(),
     }),
   );
 

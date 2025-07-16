@@ -32,6 +32,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
                 title: task.title,
                 isDone: !task.isDone,
                 priority: task.priority,
+                dueDate: task.dueDate,
                 user_id: task.user_id,
               );
             }
@@ -49,7 +50,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   if (state is TaskLoadedState) {
     final currentState = state as TaskLoadedState;
     final success = await TaskService.addTask(
-        event.title, event.priority);
+        event.title, event.priority, event.dueDate,);
 
     if (success) {
       try {

@@ -5,6 +5,7 @@ import '../bloc/task_event.dart';
 import '../bloc/task_state.dart';
 import 'add_task_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatelessWidget {
   final String userId; // Current logged in user ID
@@ -58,6 +59,14 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(
                       decoration: task.isDone ? TextDecoration.lineThrough : null,
                     ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Priority: ${task.priority}'),
+                      if (task.dueDate != null)
+                      Text('Due: ${DateFormat('yyyy-MM-dd').format(task.dueDate!)}'),
+                    ],
                   ),
                   trailing: Checkbox(
                     value: task.isDone,

@@ -13,7 +13,7 @@ class TaskResponse(BaseModel):
     title: str
     isDone: bool
     priority: int
-    due_date: Optional[str]
+    due_date: datetime | None
     user_id: str
 
     class Config:

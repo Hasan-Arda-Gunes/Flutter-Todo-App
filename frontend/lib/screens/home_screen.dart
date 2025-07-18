@@ -6,6 +6,8 @@ import '../bloc/task_state.dart';
 import 'add_task_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import '../theme_notifier.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   final String userId; // Current logged in user ID
@@ -29,13 +31,19 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Task List'),
         actions: [
-    IconButton(
-      icon: const Icon(Icons.logout),
-      onPressed: () {
-        _logout(context);
-      },
-    ),
-  ],
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _logout(context);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.brightness_6),
+            onPressed: () {
+              Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
+            },
+          )
+        ],
         ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {

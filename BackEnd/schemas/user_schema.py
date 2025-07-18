@@ -9,7 +9,7 @@ class UserRead(BaseModel):
     username: str
 
     class Config:
-        orm_mode = True  # Enables compatibility with SQLAlchemy models
+        from_attributes = True  # Enables compatibility with SQLAlchemy models
 
 class Token(BaseModel):
     access_token: str

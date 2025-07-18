@@ -14,6 +14,7 @@ class LoginScreen extends StatelessWidget {
     final password = _passwordController.text;
 
     final success = await AuthService.login(username, password);
+    print("Login result: $success");
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from fastapi import Depends
 
-DATABASE_URL = "mysql+pymysql://root:arda@localhost:3306/flutterdb"
+DATABASE_URL = "mysql+pymysql://user:password@localhost:3306/flutterdb"
 
 engine = create_engine(DATABASE_URL)
 

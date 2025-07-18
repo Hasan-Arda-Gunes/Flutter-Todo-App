@@ -22,5 +22,14 @@ class AddTask extends TaskEvent {
     required this.priority,
     this.dueDate,
   });
+
+}
+
+class SearchTask extends TaskEvent{
+  final String title;
+
+  SearchTask({
+    required this.title,
+  });
 }
 

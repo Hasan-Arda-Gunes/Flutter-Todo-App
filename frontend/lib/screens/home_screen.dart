@@ -9,48 +9,85 @@ import 'package:intl/intl.dart';
 import '../theme_notifier.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
-  final String userId; // Current logged in user ID
+class HomeScreen extends StatefulWidget {
+  final String userId;
 
   const HomeScreen({Key? key, required this.userId}) : super(key: key);
 
-  Future<void> _logout(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.clear();
-
-  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
+class _HomeScreenState extends State<HomeScreen> {
+  late TextEditingController _searchController;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    context.read<TaskBloc>().add(LoadTasks(userId: widget.userId));
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Load tasks when screen opens
-    context.read<TaskBloc>().add(LoadTasks(userId: userId));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task List'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              _logout(context);
-            },
+            onPressed: () => _logout(context),
           ),
           IconButton(
-            icon: Icon(Icons.brightness_6),
+            icon: const Icon(Icons.brightness_6),
             onPressed: () {
               Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
             },
-          )
+          ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Search tasks...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+          ),
         ),
+      ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is TaskLoadingState) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TaskLoadedState) {
-            final tasks = state.tasks;
+            final tasks = state.tasks
+                .where((task) =>
+                    task.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+                .toList();
 
             if (tasks.isEmpty) {
               return const Center(child: Text('No tasks found.'));
@@ -60,12 +97,12 @@ class HomeScreen extends StatelessWidget {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final task = tasks[index];
-
                 return ListTile(
                   title: Text(
                     task.title,
                     style: TextStyle(
-                      decoration: task.isDone ? TextDecoration.lineThrough : null,
+                      decoration:
+                          task.isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
                   subtitle: Column(
@@ -73,7 +110,7 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Text('Priority: ${task.priority}'),
                       if (task.dueDate != null)
-                      Text('Due: ${DateFormat('yyyy-MM-dd').format(task.dueDate!)}'),
+                        Text('Due: ${DateFormat('yyyy-MM-dd').format(task.dueDate!)}'),
                     ],
                   ),
                   trailing: Checkbox(
@@ -88,18 +125,14 @@ class HomeScreen extends StatelessWidget {
           } else if (state is TaskErrorState) {
             return Center(child: Text('Error: ${state.message}'));
           }
-
           return const SizedBox.shrink();
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to AddTaskScreen, pass current userId
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => AddTaskScreen(),
-            ),
+            MaterialPageRoute(builder: (_) => const AddTaskScreen()),
           );
         },
         child: const Icon(Icons.add),
